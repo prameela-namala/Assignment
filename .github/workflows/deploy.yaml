@@ -74,7 +74,7 @@ jobs:
         run: |
           docker push $ECR_URI:${IMAGE_TAG}
 
-      - name: Deploy to ECS (force new deployment)
+      - name: Deploy to ECS agin (force new deployment)
         run: |
           aws ecs update-service \
             --cluster ecs-cluster-dev \
