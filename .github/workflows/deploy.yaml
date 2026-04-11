@@ -136,24 +136,42 @@ jobs:
       # UPDATE TASK DEFINITION
       # ----------------------------
       - name: Register new Task Definition
+        id: taskdef
         run: |
+          set -e
+
           NEW_IMAGE="$ECR_URI:$IMAGE_TAG"
 
           TASK_DEF=$(aws ecs describe-task-definition \
             --task-definition webapp-task-dev)
 
-          echo $TASK_DEF | jq --arg IMAGE "$NEW_IMAGE" '
+          echo "$TASK_DEF" | jq --arg IMAGE "$NEW_IMAGE" '
             .taskDefinition
             | .containerDefinitions[0].image = $IMAGE
-            | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)
+            | del(
+                .taskDefinitionArn,
+                .revision,
+                .status,
+                .requiresAttributes,
+                .compatibilities,
+                .registeredAt,
+                .registeredBy
+              )
           ' > new-task-def.json
 
-          aws ecs register-task-definition \
-            --cli-input-json file://new-task-def.json
+          TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file://new-task-def.json \
+            --query "taskDefinition.taskDefinitionArn" \
+            --output text)
+
+          echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
+
 
       - name: Deploy to ECS
         run: |
           aws ecs update-service \
             --cluster ecs-cluster-dev \
             --service webapp-service-dev \
+            --task-definition $TASK_DEF_ARN \
             --force-new-deployment
+
