@@ -1,201 +1,103 @@
-# 🚀 ECS Fargate CI/CD Pipeline with Terraform
+# 🚀 AWS ECS Fargate Web App (Terraform Project)
 
-## 📌 Overview
+This project creates and deploys a simple web application using **AWS cloud services** with Terraform.
 
-This project demonstrates an end-to-end DevOps pipeline that builds, tests, containerizes, and deploys an application to AWS ECS Fargate using Infrastructure as Code and CI/CD automation.
-
----
-
-## 🧱 Architecture
-
-The system includes:
-
-* CI/CD pipeline using GitHub Actions
-* Container image storage in Amazon ECR
-* Infrastructure provisioned using Terraform
-* Application deployed on Amazon ECS Fargate
-* Traffic routed via Application Load Balancer
-* Monitoring and alerting using CloudWatch
+It uses containers, so the app runs inside Docker and is managed by AWS automatically.
 
 ---
 
-## ⚙️ Tech Stack
+# 🧠 What this project does (Simple explanation)
 
-* **Language**: Node.js / Python
-* **Containerization**: Docker
-* **Infrastructure**: Terraform
-* **Cloud**: AWS (ECS, ECR, VPC, ALB, IAM, CloudWatch)
-* **CI/CD**: GitHub Actions
-
----
-
-## 📂 Project Structure
-
-```
-.
-├── frontend                 # Application source code
-│   ├── assets 
-│   
-│   Dockerfile
-│
-├── terraform/
-│   ├── main.tf
-│   ├── variables.tf
-│   ├── outputs.tf
-│
-├── .github/workflows/
-│   └── deploy.yml
-│
-└── README.md
-```
+- Builds a Docker container image of your web app
+- Stores the image in **Amazon ECR**
+- Runs the container in **Amazon ECS (Fargate)**
+- Uses an **Application Load Balancer (ALB)** to send traffic to the app
+- Shows logs in **CloudWatch**
 
 ---
 
-## 🔄 CI/CD Pipeline Flow
+# 🏗️ Architecture (Easy flow)
 
-1. Developer pushes code to GitHub
-2. GitHub Actions triggers pipeline:
+User → Load Balancer → ECS Service → Container (App)
 
-   * Run lint checks
-   * Execute unit tests
-   * Build Docker image
-   * Push image to Amazon ECR
-   * Deploy to ECS Fargate
-3. ECS pulls latest image and updates service
+Container image comes from → ECR
+
+Logs go to → CloudWatch
 
 ---
 
-## 🛠️ Setup Instructions
+# ⚙️ AWS Services Used
 
-### 1. Prerequisites
-
-* AWS CLI configured
-* Terraform installed
-* GitHub repository
-
----
-
-### 2. Clone Repository
-
-```bash
-git clone <repo-url>
-cd Assignment
-```
+- Amazon ECR → Stores Docker image
+- Amazon ECS (Fargate) → Runs the app
+- Application Load Balancer → Sends traffic
+- CloudWatch → Stores logs
+- IAM Role → Gives permissions
+- Security Groups → Controls access
 
 ---
 
-### 3. Provision Infrastructure
+# 📁 What Terraform creates
 
-```bash
-cd terraform-ecs-ecr-alb
-terraform init
-terraform apply -var-file=dev.tfvars -auto-approve
-```
+This code automatically creates:
 
-This will create:
-
-* VPC, subnets
-* ECS cluster & service
-* ALB
-* IAM roles
-* CloudWatch logs
+✔ Docker image repository (ECR)  
+✔ ECS Cluster  
+✔ ECS Service (runs your app)  
+✔ Task Definition (container settings)  
+✔ Load Balancer (ALB)  
+✔ Target Group (connects ALB to ECS)  
+✔ Security rules  
+✔ CloudWatch log group  
+✔ IAM role for permissions  
 
 ---
 
-### 4. Configure GitHub Secrets
+# 🚀 How it works (Step by step)
 
-Add the following secrets in your repo:
-
-* AWS_ACCESS_KEY_ID
-* AWS_SECRET_ACCESS_KEY
-* AWS_REGION
-* ECR_REPOSITORY
-
----
-
-### 5. Trigger Deployment
-
-Push code to main branch:
-
-```bash
-git push origin main
-```
-
-Pipeline will:
-
-* Build Docker image
-* Push to ECR
-* Deploy to ECS
+1. You run Terraform
+2. AWS resources are created
+3. Docker image is built and pushed to ECR
+4. ECS pulls the image
+5. App starts running in the cloud
+6. ALB gives you a public URL
+7. You open the URL and see your app 🎉
 
 ---
 
-## 🔁 Deployment Strategy
+# 🔐 Security
 
-* Uses **rolling updates** (default ECS)
-
----
-
-## 📊 Monitoring & Alerts
-
-* Logs stored in CloudWatch Logs
-* Metrics tracked via CloudWatch
-* Alarms configured for:
-
-  * High CPU usage
-  * Service failures
-  * Unhealthy targets
+- Only ALB can access ECS tasks
+- ECS tasks have IAM permissions to:
+  - Pull images from ECR
+  - Send logs to CloudWatch
 
 ---
 
-### Manual rollback:
+# 🌐 Output
 
-```bash
-aws ecs update-service \
-  --cluster <cluster-name> \
-  --service <service-name> \
-  --force-new-deployment
-```
+After deployment, you get:
 
-Or redeploy previous image tag.
-
-
-## 🐞 Troubleshooting
-
-### ❌ Deployment Failed
-
-* Check GitHub Actions logs
-* Verify ECR image exists
-
-### ❌ Service Not Running
-
-* Check ECS service events
-* Verify task definition
-
-### ❌ No Logs
-
-* Check CloudWatch log group
-* Ensure IAM role has permissions
-
-### ❌ ALB Not Routing
-
-* Check target group health
-* Verify security groups
+👉 A public load balancer URL  
+👉 Running web app in AWS  
+👉 Logs in CloudWatch  
 
 ---
 
-## 🔐 Security
+# 🧰 Requirements
 
-* IAM roles follow least privilege
-* Private subnets used for ECS tasks
-* Secrets managed via GitHub Secrets
+- Terraform installed
+- AWS account
+- AWS CLI configured
+- Docker installed (if building image locally)
 
 ---
 
-## 📈 Future Improvements
+# 🎯 Purpose of this project
 
-* Add autoscaling for ECS service
-* Implement canary deployments
-* Use AWS Secrets Manager
-* Add Terraform remote backend
+This project is made to learn:
 
-
+- How cloud deployments work
+- How containers run in AWS
+- How CI/CD systems deploy applications
+- How infrastructure as code works using Terraform
