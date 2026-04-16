@@ -18,7 +18,27 @@ module "alb_sg_id" {
     sg_tags = var.alb_sg_id_tags
 }
 
+# ----------------------------
+# SECURITY GROUP (TASK)
+# ----------------------------
+resource "aws_security_group" "task_sg" {
+  name   = "task-sg-dev"
+  vpc_id = data.aws_ssm_parameter.vpc_id.value
 
+  ingress {
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [data.aws_ssm_parameter.alb_sg_id.value]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 
 
 #mysql allowing connctions on 3306 from the instances attached to backend

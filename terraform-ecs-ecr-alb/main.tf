@@ -57,7 +57,7 @@ resource "aws_security_group" "task_sg" {
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
-    security_groups = [data.aws_ssm_parameter.alb_sg_id.value]
+    security_groups = [aws_security_group.alb_sg.id]
   }
 
   egress {
@@ -67,7 +67,28 @@ resource "aws_security_group" "task_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+# ----------------------------
+# SECURITY GROUP (ALB)
+# ----------------------------
+resource "aws_security_group" "alb_sg" {
+  name        = "alb-sg-dev"
+  description = "Allow HTTP inbound traffic"
+  vpc_id      = data.aws_ssm_parameter.vpc_id.value
 
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # public access
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 # ----------------------------
 # ALB
 # ----------------------------
@@ -75,7 +96,7 @@ resource "aws_lb" "alb" {
   name               = "alb-dev"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [data.aws_ssm_parameter.alb_sg_id.value]
+  security_groups    = [aws_security_group.alb_sg.id]
 
   subnets = split(",", data.aws_ssm_parameter.public_subnet_ids.value)
 }
