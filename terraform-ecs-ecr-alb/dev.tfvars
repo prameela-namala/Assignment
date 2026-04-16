@@ -11,8 +11,8 @@ public_subnets = split(",", data.aws_ssm_parameter.public_subnet_ids.value)
 #private_subnets = ["subnet-ccc333", "subnet-ddd444"]
 
 # Security Groups
-alb_sg_id = data.aws_ssm_parameter.alb_sg_id.value
-app_sg_id = data.aws_ssm_parameter.app_sg_id.value
+#alb_sg_id = data.aws_ssm_parameter.alb_sg_id.value
+#app_sg_id = data.aws_ssm_parameter.app_sg_id.value
 
 # ECS Configuration
 app_cpu      = 256
